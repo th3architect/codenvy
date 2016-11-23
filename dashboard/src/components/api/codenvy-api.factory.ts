@@ -13,6 +13,14 @@
  * from Codenvy S.A..
  */
 'use strict';
+import {CodenvyFactory} from './codenvy-factory.factory';
+import {CodenvyFactoryTemplate} from './codenvy-factory-template.factory';
+import {CodenvyUser} from './codenvy-user.factory';
+import {CodenvyPermissions} from './codenvy-permissions.factory';
+import {CodenvySystem} from './codenvy-system.factory';
+import {CodenvyTeam} from './codenvy-team.factory';
+import {CodenvyPayment} from './codenvy-payment.factory';
+import {CodenvyLicense} from './codenvy-license.factory';
 
 
 /**
@@ -21,12 +29,20 @@
  * @author Florent Benoit
  */
 export class CodenvyAPI {
+  codenvyFactory: CodenvyFactory;
+  codenvyFactoryTemplate: CodenvyFactoryTemplate;
+  codenvyUser: CodenvyUser;
+  codenvyPermissions: CodenvyPermissions;
+  codenvySystem: CodenvySystem;
+  codenvyLicense: CodenvyLicense;
+  codenvyTeam: CodenvyTeam;
+  codenvyPayment: CodenvyPayment;
 
   /**
    * Default constructor that is using resource
    * @ngInject for Dependency injection
    */
-  constructor(codenvyFactory, codenvyFactoryTemplate, codenvyUser, codenvyPermissions, codenvySystem, codenvyLicense, codenvyTeam) {
+  constructor(codenvyFactory, codenvyFactoryTemplate, codenvyUser, codenvyPermissions, codenvySystem, codenvyLicense, codenvyTeam, codenvyPayment) {
     this.codenvyFactory = codenvyFactory;
     this.codenvyFactoryTemplate = codenvyFactoryTemplate;
     this.codenvyUser = codenvyUser;
@@ -34,13 +50,22 @@ export class CodenvyAPI {
     this.codenvySystem = codenvySystem;
     this.codenvyLicense = codenvyLicense;
     this.codenvyTeam = codenvyTeam;
+    this.codenvyPayment = codenvyPayment;
+  }
+
+  /**
+   * The Codenvy Payment API
+   * @returns {CodenvyPayment|*}
+   */
+  getPayment(): CodenvyPayment {
+    return this.codenvyPayment;
   }
 
   /**
    * The Codenvy Factory API
-   * @returns {codenvyFactory|*}
+   * @returns {CodenvyFactory|*}
    */
-  getFactory() {
+  getFactory(): CodenvyFactory {
     return this.codenvyFactory;
   }
 
@@ -48,7 +73,7 @@ export class CodenvyAPI {
    * The Codenvy Factory Template API
    * @returns {CodenvyFactoryTemplate|*}
    */
-  getFactoryTemplate() {
+  getFactoryTemplate(): CodenvyFactoryTemplate {
     return this.codenvyFactoryTemplate;
   }
 
@@ -57,31 +82,31 @@ export class CodenvyAPI {
    *
    * @returns {CodenvyLicense}
    */
-  getLicense() {
+  getLicense(): CodenvyLicense {
     return this.codenvyLicense;
   }
 
   /**
    * The Codenvy User API
-   * @returns {CodenvyAPI.codenvyUser|*}
+   * @returns {CodenvyUser|*}
    */
-  getUser() {
+  getUser(): CodenvyUser {
     return this.codenvyUser;
   }
 
   /**
    * The Codenvy Permissions API
-   * @returns {CodenvyAPI.codenvyPermissions|*}
+   * @returns {CodenvyPermissions|*}
    */
-  getPermissions() {
+  getPermissions(): CodenvyPermissions {
     return this.codenvyPermissions;
   }
 
   /**
    * The Codenvy System API
-   * @returns {CodenvyAPI.codenvySystem|*}
+   * @returns {CodenvySystem|*}
    */
-  getSystem() {
+  getSystem(): CodenvySystem {
     return this.codenvySystem;
   }
 
