@@ -13,12 +13,18 @@
  * from Codenvy S.A..
  */
 'use strict';
+import {CodenvyTeam} from '../../../../../components/api/codenvy-team.factory';
+
 /**
  * Controller for team member item..
  *
  * @author Ann Shumilova
  */
 export class MemberItemController {
+  /**
+   * Team API interaction.
+   */
+  private codenvyTeam: CodenvyTeam;
   /**
    * Service for displaying dialogs.
    */
@@ -31,13 +37,25 @@ export class MemberItemController {
    * Member to be displayed. (Comes from directive's scope).
    */
   private member: any;
+  /**
+   * Lodash library.
+   */
+  private lodash: any;
+  /**
+   * Actions that are not part of any role.
+   */
+  private otherActions: Array<string>;
 
   /**
    * Default constructor that is using resource injection
    * @ngInject for Dependency injection
    */
-  constructor($mdDialog: angular.material.IDialogService) {
+  constructor($mdDialog: angular.material.IDialogService, codenvyTeam: CodenvyTeam, lodash: any) {
     this.$mdDialog = $mdDialog;
+    this.codenvyTeam = codenvyTeam;
+    this.lodash = lodash;
+
+    this.otherActions = [];
   }
 
   /**
@@ -66,12 +84,21 @@ export class MemberItemController {
   }
 
   /**
-   * Returns string with member actions.
+   * Returns string with member roles.
    *
-   * @returns {string} string format of actions array
+   * @returns {string} string format of roles array
    */
-  getMemberActions(): void {
-    return this.member.permissions.actions.join(', ');
+  getMemberRoles(): string {
+    let roles = this.codenvyTeam.getRolesFromActions(this.member.permissions.actions);
+    let titles = [];
+    let processedActions = []
+    roles.forEach((role: any) => {
+      titles.push(role.title);
+      processedActions = processedActions.concat(role.actions);
+    });
+
+    this.otherActions = this.lodash.difference(this.member.permissions.actions, processedActions);
+    return titles.join(', ');
   }
 }
 

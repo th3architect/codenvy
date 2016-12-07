@@ -21,6 +21,7 @@ import {CodenvyLicense} from './codenvy-license.factory';
 import {CodenvyPermissions} from './codenvy-permissions.factory';
 import {CodenvySystem} from './codenvy-system.factory';
 import {CodenvyTeam} from './codenvy-team.factory';
+import {CodenvyResourcesDistribution} from './codenvy-resources-distribution.factory';
 import {CodenvyFactoryTemplate} from './codenvy-factory-template.factory';
 import {CodenvyAPIBuilder} from './builder/codenvy-api-builder.factory';
 import {CodenvyHttpBackend} from './test/codenvy-http-backend';
@@ -42,5 +43,6 @@ export class CodenvyApiConfig {
     register.factory('codenvyAPIBuilder', CodenvyAPIBuilder);
     register.factory('codenvyHttpBackend', CodenvyHttpBackendFactory);
     register.factory('codenvyHttpBackendProvider', CodenvyHttpBackendProviderFactory);
+    register.factory('codenvyResourcesDistribution', CodenvyResourcesDistribution);
   }
 }

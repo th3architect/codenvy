@@ -14,6 +14,8 @@
  */
 'use strict';
 import {CodenvyTeam} from '../../../components/api/codenvy-team.factory';
+import {CodenvyResourcesDistribution} from '../../../components/api/codenvy-resources-distribution.factory';
+import {CodenvyResourceLimits} from '../../../components/api/codenvy-resource-limits';
 
 /**
  * Controller for a managing team details.
@@ -25,6 +27,10 @@ export class TeamDetailsController {
    * Team API interaction.
    */
   private codenvyTeam: CodenvyTeam;
+  /**
+   * Team resources API interaction.
+   */
+  private codenvyResourcesDistribution: CodenvyResourcesDistribution;
   /**
    * Notifications service.
    */
@@ -57,14 +63,27 @@ export class TeamDetailsController {
    * Index of the selected tab.
    */
   private selectedTabIndex: number;
+  /**
+   * Team limits.
+   */
+  private limits: any;
+  /**
+   * Copy of limits before letting to modify, to be able to compare.
+   */
+  private limitsCopy: any;
+  /**
+   * Page loading state.
+   */
+  private isLoading: boolean;
 
   /**
    * Default constructor that is using resource injection
    * @ngInject for Dependency injection
    */
-  constructor(codenvyTeam: CodenvyTeam, $route: ng.route.IRouteService, $location: ng.ILocationService,
+  constructor(codenvyTeam: CodenvyTeam, codenvyResourcesDistribution: CodenvyResourcesDistribution, $route: ng.route.IRouteService, $location: ng.ILocationService,
               $mdDialog: angular.material.IDialogService, cheNotification: any) {
     this.codenvyTeam = codenvyTeam;
+    this.codenvyResourcesDistribution = codenvyResourcesDistribution;
     this.teamName = $route.current.params.teamName;
     this.$location = $location;
     this.$mdDialog = $mdDialog;
@@ -100,14 +119,41 @@ export class TeamDetailsController {
   fetchTeamDetails(): void {
     this.team  = this.codenvyTeam.getTeamByName(this.teamName);
     this.newName = angular.copy(this.teamName);
-
     if (!this.team) {
       this.codenvyTeam.fetchTeamByName(this.teamName).then((team) => {
         this.team = team;
+        this.fetchLimits();
       }, (error: any) => {
         this.invalidTeam = true;
       });
+    } else {
+      this.fetchLimits();
     }
+  }
+
+  fetchLimits(): void {
+    this.isLoading = true;
+    this.codenvyResourcesDistribution.fetchTeamResources(this.team.id).then(() => {
+      this.isLoading = false;
+      this.processResources(this.codenvyResourcesDistribution.getTeamResources(this.team.id));
+    }, (error: any) => {
+      this.isLoading = false;
+      if (error.status === 304) {
+        this.processResources(this.codenvyResourcesDistribution.getTeamResources(this.team.id));
+      }
+    });
+  }
+
+  processResources(resources): void {
+    let ramLimit = this.codenvyResourcesDistribution.getTeamResourceByType(this.team.id, CodenvyResourceLimits.RAM);
+    let workspaceLimit = this.codenvyResourcesDistribution.getTeamResourceByType(this.team.id, CodenvyResourceLimits.WORKSPACE);
+    let runtimeLimit = this.codenvyResourcesDistribution.getTeamResourceByType(this.team.id, CodenvyResourceLimits.RUNTIME);
+
+    this.limits = {};
+    this.limits.workspaceCap = workspaceLimit ? workspaceLimit.amount : undefined;
+    this.limits.runtimeCap = runtimeLimit ? runtimeLimit.amount : undefined;
+    this.limits.ramCap = ramLimit ? ramLimit.amount : undefined;
+    this.limitsCopy = angular.copy(this.limits);
   }
 
   /**
@@ -152,5 +198,29 @@ export class TeamDetailsController {
         this.cheNotification.showError((error.data && error.data.message !== null) ? error.data.message : 'Rename team failed.');
       });
     }
+  }
+
+  updateLimits(invalid: boolean): void {
+    if (invalid || !this.team || !this.limits || angular.equals(this.limits, this.limitsCopy)) {
+      return;
+    }
+
+    let ramLimit = this.codenvyResourcesDistribution.getTeamResourceByType(this.team.id, CodenvyResourceLimits.RAM);
+    let workspaceLimit = this.codenvyResourcesDistribution.getTeamResourceByType(this.team.id, CodenvyResourceLimits.WORKSPACE);
+    let runtimeLimit = this.codenvyResourcesDistribution.getTeamResourceByType(this.team.id, CodenvyResourceLimits.RUNTIME);
+
+    let resources = this.codenvyResourcesDistribution.getTeamResources(this.team.id);
+    resources = angular.copy(resources);
+    resources = this.codenvyResourcesDistribution.setTeamResourceLimitByType(resources, CodenvyResourceLimits.RAM, this.limits.ramCap);
+    resources = this.codenvyResourcesDistribution.setTeamResourceLimitByType(resources, CodenvyResourceLimits.WORKSPACE, this.limits.workspaceCap);
+    resources = this.codenvyResourcesDistribution.setTeamResourceLimitByType(resources, CodenvyResourceLimits.RUNTIME, this.limits.runtimeCap);
+
+    this.isLoading = true;
+    this.codenvyResourcesDistribution.distributeResources(this.team.id, resources).then(() => {
+      this.fetchLimits();
+    }, (error: any) => {
+      this.fetchLimits();
+      this.cheNotification.showError((error.data && error.data.message !== null) ? error.data.message : 'Failed to update team resource limits.');
+    });
   }
 }
