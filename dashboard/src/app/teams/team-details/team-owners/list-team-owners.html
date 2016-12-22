@@ -1,0 +1,69 @@
+<!--
+
+    Copyright (c) 2015 Codenvy, S.A.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+
+    Contributors:
+      Codenvy, S.A. - initial API and implementation
+
+-->
+<md-content flex class="list-team-owners-section" layout="column">
+ <div ng-show="listTeamOwnersController.members.length > 0" class="list-team-owners">
+    <che-list-header>
+      <div flex="100"
+           layout="row"
+           layout-align="start stretch"
+           class="che-list-item-row">
+        <div layout="column" layout-gt-xs="row"
+             layout-align="start center"
+             class="che-checkbox-area">
+          <div layout="row" layout-align="center center" class="che-list-item-checkbox-main">
+            <md-checkbox class="che-list-item-checkbox"
+                         aria-label="Member list"
+                         ng-checked="listTeamOwnersController.isBulkChecked"
+                         ng-click="listTeamOwnersController.changeBulkSelection()"></md-checkbox>
+          </div>
+        </div>
+        <div flex hide-xs layout-gt-xs="row"
+             layout-align="start center"
+             class="che-list-item-details">
+          <che-list-header-column flex-gt-xs="60"
+                                  che-sort-value='listTeamOwnersController.memberOrderBy'
+                                  che-sort-item='name'
+                                  che-column-title='Name'></che-list-header-column>
+          <che-list-header-column flex-gt-xs="40"
+                                  che-sort-value='listTeamOwnersController.memberOrderBy'
+                                  che-sort-item='email'
+                                  che-column-title='Email'></che-list-header-column>
+        </div>
+      </div>
+    </che-list-header>
+    <che-list ng-show="(listTeamOwnersController.members | filter:listTeamOwnersController.memberFilter).length > 0">
+      <member-item
+        ng-repeat="member in listTeamOwnersController.members | orderBy:[listTeamOwnersController.memberOrderBy, 'config.name'] | filter:listTeamOwnersController.memberFilter"
+        ng-model="listTeamOwnersController.membersSelectedStatus[member.id]"
+        che-selectable="true"
+        che-display-labels="false"
+        che-on-checkbox-click="listTeamOwnersController.updateSelectedStatus()"
+        callback="listTeamOwnersController"
+        member="member"
+        hide-details="true"></member-item>
+    </che-list>
+  </div>
+  <!-- Buttons -->
+  <div layout="row" flex>
+    <div flex>
+      <che-button-default class="che-list-add-button"
+                          che-button-title="Add" name="addButton"
+                          ng-click="listTeamOwnersController.addOwner()"></che-button-default>
+    </div>
+    <div ng-if="listTeamOwnersController.members.length > 0">
+      <che-button-primary-flat ng-disabled="listTeamOwnersController.isNoSelected"
+                               che-button-title="Delete" name="deleteButton"
+                               ng-click="listTeamOwnersController.deleteOwners()"></che-button-primary-flat>
+    </div>
+  </div>
+</md-content>

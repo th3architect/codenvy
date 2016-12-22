@@ -14,24 +14,26 @@
  */
 'use strict';
 import {CodenvyTeam} from '../../../../components/api/codenvy-team.factory';
+import {CodenvyTeamRoles} from '../../../../components/api/codenvy-team-roles';
 import {CodenvyPermissions} from '../../../../components/api/codenvy-permissions.factory';
+import {CodenvyUser} from '../../../../components/api/codenvy-user.factory';
 
 /**
  * @ngdoc controller
- * @name teams.members:ListTeamMembersController
- * @description This class is handling the controller for the list of team's members.
+ * @name teams.members:ListTeamOwnersController
+ * @description This class is handling the controller for the list of team's owners.
  * @author Ann Shumilova
  */
-export class ListTeamMembersController {
+export class ListTeamOwnersController {
 
   /**
    * Team API interaction.
    */
   private codenvyTeam: CodenvyTeam;
   /**
-   * User profile API interaction.
+   * User API interaction.
    */
-  private cheProfile: any;
+  private codenvyUser: CodenvyUser;
   /**
    * Permissions API interaction.
    */
@@ -86,11 +88,11 @@ export class ListTeamMembersController {
    * Default constructor that is using resource
    * @ngInject for Dependency injection
    */
-  constructor(codenvyTeam: CodenvyTeam, codenvyPermissions: CodenvyPermissions, cheProfile: any,
+  constructor(codenvyTeam: CodenvyTeam, codenvyPermissions: CodenvyPermissions, codenvyUser: CodenvyUser,
               $mdDialog: angular.material.IDialogService, $q: ng.IQService, cheNotification: any) {
     this.codenvyTeam = codenvyTeam;
     this.codenvyPermissions = codenvyPermissions;
-    this.cheProfile = cheProfile;
+    this.codenvyUser = codenvyUser;
     this.$mdDialog = $mdDialog;
     this.$q = $q;
     this.cheNotification = cheNotification;
@@ -134,13 +136,16 @@ export class ListTeamMembersController {
 
     permissions.forEach((permission) => {
       let userId = permission.userId;
-      let user = this.cheProfile.getProfileFromId(userId);
-      if (user) {
-        this.formUserItem(user, permission);
-      } else {
-        this.cheProfile.fetchProfileId(userId).then(() => {
-          this.formUserItem(this.cheProfile.getProfileFromId(userId), permission);
-        });
+      let roles = this.codenvyTeam.getRolesFromActions(permission.actions);
+      if (roles.indexOf(CodenvyTeamRoles.TEAM_OWNER) >= 0) {
+        let user = this.codenvyUser.getUserFromId(userId);
+        if (user) {
+          this.formUserItem(user, permission);
+        } else {
+          this.codenvyUser.fetchUserId(userId).then(() => {
+            this.formUserItem(this.codenvyUser.getUserFromId(userId), permission);
+          });
+        }
       }
     });
   }
@@ -152,7 +157,6 @@ export class ListTeamMembersController {
    * @param permissions permissions data
    */
   formUserItem(user: any, permissions: any): void {
-    user.name = this.cheProfile.getFullName(user.attributes);
     let userItem = angular.copy(user);
     userItem.permissions = permissions;
     this.members.push(userItem);

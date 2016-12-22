@@ -34,17 +34,17 @@
          layout-align-gt-xs="start center"
          layout-align-xs="start start"
          class="che-list-item-details">
-      <div flex-gt-xs="25"
+      <div flex-gt-xs="{{memberItemController.hideDetails ? 60 : 25}}"
            class="che-list-item-name">
         <span class="che-xs-header noselect" hide-gt-xs>Name</span>
         <span class="member-email che-hover ">{{memberItemController.member.name}}</span>
       </div>
-      <div flex-gt-xs="25"
+      <div flex-gt-xs="{{memberItemController.hideDetails ? 40 : 25}}"
            class="che-list-item-secondary">
         <span class="che-xs-header noselect" hide-gt-xs>Email</span>
         <span class="member-email che-hover ">{{memberItemController.member.email}}</span>
       </div>
-      <div flex-gt-xs="35" class="che-list-item-secondary">
+      <div flex-gt-xs="35" class="che-list-item-secondary" ng-if="!memberItemController.hideDetails">
         <span class="che-xs-header noselect" hide-gt-xs>Permissions</span>
         <span class="member-list-permissions">{{memberItemController.getMemberRoles()}} </span>
         <span tooltip="{{memberItemController.otherActions.toString()}}" ng-if="memberItemController.otherActions.length > 0">, Other...</span>
@@ -54,7 +54,7 @@
         <span class="che-xs-header noselect" hide-gt-xs>State</span>
         <span class="member-email che-hover ">member</span>
       </div>-->
-      <div flex-gt-xs="15">
+      <div flex-gt-xs="15" ng-if="!memberItemController.hideDetails">
         <span class="che-xs-header noselect" hide-gt-xs>Actions</span>
         <span class="che-list-actions">
 

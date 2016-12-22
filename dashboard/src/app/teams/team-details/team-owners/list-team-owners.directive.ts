@@ -15,27 +15,32 @@
 'use strict';
 
 /**
- * Defines a directive for user item in permissions list.
+ * @ngdoc directive
+ * @name teams.owners:ListTeamMembers
+ * @restrict E
+ * @element
+ *
+ * @description
+ * `<list-team-owners team="ctrl.team"></list-team-owners>` for displaying list of owners
+ *
+ * @usage
+ *   <list-team-owners team="ctrl.team"></list-team-owners>
  *
  * @author Ann Shumilova
  */
-export class MemberItem implements ng.IDirective {
+export class ListTeamOwners implements ng.IDirective {
 
   restrict: string = 'E';
-  templateUrl: string = 'app/teams/team-details/team-members/member-item/member-item.html';
-  replace: boolean = false;
+  templateUrl: string = 'app/teams/team-details/team-owners/list-team-owners.html';
 
-  controller: string = 'MemberItemController';
-  controllerAs: string = 'memberItemController';
-
+  controller: string = 'ListTeamOwnersController';
+  controllerAs: string = 'listTeamOwnersController';
   bindToController: boolean = true;
 
   scope: any = {
-    member: '=member',
-    callback: '=callback',
-    hideDetails: '=hideDetails'
+    team: '='
   };
 
-  constructor() {
+  constructor () {
   }
 }

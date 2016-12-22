@@ -100,5 +100,6 @@ export class MemberItemController {
     this.otherActions = this.lodash.difference(this.member.permissions.actions, processedActions);
     return titles.join(', ');
   }
+
 }
 

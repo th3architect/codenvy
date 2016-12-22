@@ -22,12 +22,13 @@ import {MemberDialogController} from './member-dialog/member-dialog.controller';
 import {ListMembersController} from './invite-members/list-members.controller';
 import {ListMembers} from './invite-members/list-members.directive';
 
-
 import {ListTeamWorkspaces} from './team-details/team-workspaces/list-team-workspaces.directive';
 import {ListTeamWorkspacesController} from './team-details/team-workspaces/list-team-workspaces.controller';
 
 import {ListTeamMembers} from './team-details/team-members/list-team-members.directive';
 import {ListTeamMembersController} from './team-details/team-members/list-team-members.controller';
+import {ListTeamOwners} from './team-details/team-owners/list-team-owners.directive';
+import {ListTeamOwnersController} from './team-details/team-owners/list-team-owners.controller';
 import {MemberItem} from './team-details/team-members/member-item/member-item.directive';
 import {MemberItemController} from './team-details/team-members/member-item/member-item.controller';
 
@@ -49,6 +50,9 @@ export class TeamsConfig {
 
     register.controller('ListTeamMembersController', ListTeamMembersController);
     register.directive('listTeamMembers', ListTeamMembers);
+
+    register.controller('ListTeamOwnersController', ListTeamOwnersController);
+    register.directive('listTeamOwners', ListTeamOwners);
 
     register.controller('MemberItemController', MemberItemController);
     register.directive('memberItem', MemberItem);
