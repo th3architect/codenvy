@@ -179,7 +179,7 @@ export class ListTeamMembersController {
    */
   selectAllMembers(): void {
     this.members.forEach((member: any) => {
-      this.membersSelectedStatus[member.id] = true;
+      this.membersSelectedStatus[member.userId] = true;
     });
   }
 
@@ -188,7 +188,7 @@ export class ListTeamMembersController {
    */
   deselectAllMembers(): void {
     this.members.forEach((member: any) => {
-      this.membersSelectedStatus[member.id] = false;
+      this.membersSelectedStatus[member.userId] = false;
     });
   }
 

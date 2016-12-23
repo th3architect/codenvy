@@ -62,7 +62,7 @@
   <che-list ng-show="(listTeamMembersController.members | filter:listTeamMembersController.memberFilter).length > 0">
     <member-item
       ng-repeat="member in listTeamMembersController.members | orderBy:[listTeamMembersController.memberOrderBy, 'config.name'] | filter:listTeamMembersController.memberFilter"
-      ng-model="listTeamMembersController.membersSelectedStatus[member.id]"
+      ng-model="listTeamMembersController.membersSelectedStatus[member.userId]"
       che-selectable="true"
       che-display-labels="false"
       che-on-checkbox-click="listTeamMembersController.updateSelectedStatus()"

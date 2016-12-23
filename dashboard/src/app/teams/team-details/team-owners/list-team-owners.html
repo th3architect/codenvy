@@ -44,7 +44,7 @@
     <che-list ng-show="(listTeamOwnersController.members | filter:listTeamOwnersController.memberFilter).length > 0">
       <member-item
         ng-repeat="member in listTeamOwnersController.members | orderBy:[listTeamOwnersController.memberOrderBy, 'config.name'] | filter:listTeamOwnersController.memberFilter"
-        ng-model="listTeamOwnersController.membersSelectedStatus[member.id]"
+        ng-model="listTeamOwnersController.membersSelectedStatus[member.userId]"
         che-selectable="true"
         che-display-labels="false"
         che-on-checkbox-click="listTeamOwnersController.updateSelectedStatus()"
@@ -63,7 +63,7 @@
     <div ng-if="listTeamOwnersController.members.length > 0">
       <che-button-primary-flat ng-disabled="listTeamOwnersController.isNoSelected"
                                che-button-title="Delete" name="deleteButton"
-                               ng-click="listTeamOwnersController.deleteOwners()"></che-button-primary-flat>
+                               ng-click="listTeamOwnersController.removeOwners()"></che-button-primary-flat>
     </div>
   </div>
 </md-content>

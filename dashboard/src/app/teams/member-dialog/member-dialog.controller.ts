@@ -66,9 +66,14 @@ export class MemberDialogController {
   private callbackController: any;
 
   /**
-   * Member to be displayed, may be <code>null</code> if add new member is needed. (Comes from )
+   * Member to be displayed, may be <code>null</code> if add new member is needed. (Comes from outside)
    */
   private member: any;
+
+  /**
+   * Role to be used, may be <code>null</code> if role is needed to be set. (Comes from outside)
+   */
+  private role: any;
   /**
    * Dialog window title.
    */
@@ -93,6 +98,21 @@ export class MemberDialogController {
     this.$q = $q;
 
     this.isProcessing = false;
+
+    this.emails = [];
+    this.members.forEach((member: any) => {
+      this.emails.push(member.email);
+    });
+
+    //Role is set, need to add only user with this role:
+    if (this.role) {
+      this.email = '';
+      this.title = 'Add new ' + this.role.title;
+      this.buttonTitle = 'Add';
+      return;
+    }
+
+
     this.roles = [];
     if (this.member) {
       this.title = 'Edit ' + this.member.name + ' roles';
@@ -103,15 +123,11 @@ export class MemberDialogController {
       this.roles.push({'role' : CodenvyTeamRoles.TEAM_ADMIN, 'allowed' : roles.indexOf(CodenvyTeamRoles.TEAM_ADMIN) >= 0});
     } else {
       this.email = '';
-      this.title = 'Invite user to collaborate';
+      this.title = 'Invite developer to collaborate';
       this.buttonTitle = 'Add';
       this.roles.push({'role' : CodenvyTeamRoles.TEAM_MEMBER, 'allowed' : true});
       this.roles.push({'role' : CodenvyTeamRoles.TEAM_ADMIN, 'allowed' : false});
     }
-    this.emails = [];
-    this.members.forEach((member: any) => {
-      this.emails.push(member.email);
-    });
   }
 
   /**
@@ -149,7 +165,7 @@ export class MemberDialogController {
    * Adds new member.
    */
   addMembers(): void {
-    let userRoles = this.getRoles();
+    let userRoles =  this.role ? [this.role] : this.getRoles();
 
     let emails = this.email.replace(/ /g, ',').split(',');
     // form the list of emails without duplicates and empty values:
