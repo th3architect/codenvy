@@ -44,7 +44,6 @@ export class CodenvyPayment {
 
   creditCardsPerAccount: Map<string, any>;
   tokensPerAccount: Map<string, any>;
-  invoicesPerAccount: Map<string, any>;
 
   remotePaymentAPI: any;
 

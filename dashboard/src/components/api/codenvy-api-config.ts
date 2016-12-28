@@ -27,6 +27,7 @@ import {CodenvyAPIBuilder} from './builder/codenvy-api-builder.factory';
 import {CodenvyHttpBackendFactory} from './test/codenvy-http-backend.factory';
 import {CodenvyHttpBackendProviderFactory} from './test/codenvy-http-backend-provider.factory'
 import {CodenvyPayment} from './codenvy-payment.factory';
+import {CodenvyInvoices} from './codenvy-invoices.factory';
 
 export class CodenvyApiConfig {
 
@@ -45,5 +46,6 @@ export class CodenvyApiConfig {
     register.factory('codenvyHttpBackendProvider', CodenvyHttpBackendProviderFactory);
     register.factory('codenvyResourcesDistribution', CodenvyResourcesDistribution);
     register.factory('codenvyPayment', CodenvyPayment);
+    register.factory('codenvyInvoices', CodenvyInvoices);
   }
 }

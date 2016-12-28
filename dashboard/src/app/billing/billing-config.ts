@@ -20,6 +20,8 @@ import {CardInfo} from './card-info/card-info.directive';
 import {CardInfoController} from './card-info/card-info.controller';
 import {AddCreditCardController} from './card-info/add-credit-card/add-credit-card.controller';
 import {AddCreditCard} from './card-info/add-credit-card/add-credit-card.directive';
+import {ListInvoices} from './invoices/list-invoices.directive';
+import {ListInvoicesController} from './invoices/list-invoices.controller';
 
 export class BillingConfig {
 
@@ -32,6 +34,9 @@ export class BillingConfig {
 
     register.controller('AddCreditCardController', AddCreditCardController);
     register.directive('addCreditCard', AddCreditCard);
+
+    register.controller('ListInvoicesController', ListInvoicesController);
+    register.directive('listInvoices', ListInvoices);
 
     // config routes
     register.app.config(($routeProvider: ng.route.IRouteProvider) => {

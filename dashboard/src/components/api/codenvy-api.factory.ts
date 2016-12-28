@@ -21,6 +21,7 @@ import {CodenvySystem} from './codenvy-system.factory';
 import {CodenvyTeam} from './codenvy-team.factory';
 import {CodenvyPayment} from './codenvy-payment.factory';
 import {CodenvyLicense} from './codenvy-license.factory';
+import {CodenvyInvoices} from './codenvy-invoices.factory';
 
 
 /**
@@ -37,12 +38,13 @@ export class CodenvyAPI {
   codenvyLicense: CodenvyLicense;
   codenvyTeam: CodenvyTeam;
   codenvyPayment: CodenvyPayment;
+  codenvyInvoices: CodenvyInvoices;
 
   /**
    * Default constructor that is using resource
    * @ngInject for Dependency injection
    */
-  constructor(codenvyFactory, codenvyFactoryTemplate, codenvyUser, codenvyPermissions, codenvySystem, codenvyLicense, codenvyTeam, codenvyPayment) {
+  constructor(codenvyFactory, codenvyFactoryTemplate, codenvyUser, codenvyPermissions, codenvySystem, codenvyLicense, codenvyTeam, codenvyPayment, codenvyInvoices) {
     this.codenvyFactory = codenvyFactory;
     this.codenvyFactoryTemplate = codenvyFactoryTemplate;
     this.codenvyUser = codenvyUser;
@@ -51,6 +53,7 @@ export class CodenvyAPI {
     this.codenvyLicense = codenvyLicense;
     this.codenvyTeam = codenvyTeam;
     this.codenvyPayment = codenvyPayment;
+    this.codenvyInvoices = codenvyInvoices;
   }
 
   /**
@@ -110,7 +113,16 @@ export class CodenvyAPI {
     return this.codenvySystem;
   }
 
-  getTeam() {
+  getTeam(): CodenvyTeam {
     return this.codenvyTeam;
+  }
+
+  /**
+   * The Codenvy Invoices API.
+   *
+   * @returns {CodenvyInvoices}
+   */
+  getInvoices(): CodenvyInvoices {
+    return this.codenvyInvoices;
   }
 }
