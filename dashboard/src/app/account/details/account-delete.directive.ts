@@ -15,10 +15,15 @@
 'use strict';
 
 /**
- * Defines a directive for displaying account-delete widget.
+ * Defines a directive for displaying delete account widget.
  * @author Oleksii Orel
  */
 export class AccountDelete {
+  replace: boolean;
+  restrict: string;
+  templateUrl: string;
+  controller: string;
+  controllerAs: string;
 
   /**
    * Default constructor that is using resource
@@ -26,11 +31,9 @@ export class AccountDelete {
    */
   constructor () {
     this.restrict='E';
-    this.templateUrl = 'app/account/details/account-delete.html';
     this.replace = false;
-    this.controller = 'AccountDeleteCtrl';
-    this.controllerAs = 'accountDeleteCtrl';
-
+    this.templateUrl = 'app/account/details/account-delete.html';
+    this.controller = 'AccountDeleteController';
+    this.controllerAs = 'accountDeleteController';
   }
-
 }

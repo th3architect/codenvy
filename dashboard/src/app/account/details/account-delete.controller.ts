@@ -13,26 +13,36 @@
  * from Codenvy S.A..
  */
 'use strict';
+import {CodenvyUser} from '../../../components/api/codenvy-user.factory';
 
 /**
  * @ngdoc controller
- * @name account.profile.controller:AccountProfileCtrl
+ * @name account.profile.controller:AccountProfileController
  * @description This class is handling the controller for the delete account widget
  * @author Oleksii Orel
  */
-export class AccountDeleteCtrl {
+export class AccountDeleteController {
+  $location: ng.ILocationService;
+  $mdDialog: ng.material.IDialogService;
+  codenvyUser: CodenvyUser;
+  cheNotification: any;
+
   /**
    * Default constructor that is using resource injection
    * @ngInject for Dependency injection
    */
-  constructor($window, $mdDialog, codenvyUser, cheNotification) {
-    this.$window = $window;
+  constructor($location: ng.ILocationService, $mdDialog: ng.material.IDialogService, codenvyUser: CodenvyUser, cheNotification: any) {
+    this.$location = $location;
     this.$mdDialog = $mdDialog;
     this.codenvyUser = codenvyUser;
     this.cheNotification = cheNotification;
   }
 
-  deleteAccount() {
+  /**
+   * Delete account
+   * @param event{MouseEvent}
+   */
+  deleteAccount(event: MouseEvent): void {
     let confirm = this.$mdDialog.confirm()
       .title('Delete Account')
       .content('Account deletion cannot be undone. Please confirm you want to delete your account.')
@@ -41,13 +51,14 @@ export class AccountDeleteCtrl {
       .cancel('Cancel')
       .clickOutsideToClose(true)
       .targetEvent(event);
+
     this.$mdDialog.show(confirm).then(() => {
       this.codenvyUser.deleteCurrentUser().then(() => {
         this.codenvyUser.logout().then(() => {
-          this.$window.location = '/site/account-deleted';
+          this.$location.path('/site/account-deleted');
         });
       }, (error) => {
-        this.cheNotification.showError(error.data.message ? error.data.message : 'Account deletion failed.');
+        this.cheNotification.showError(error && error.data && error.data.message ? error.data.message : 'Account deletion failed.');
       });
     });
   }
