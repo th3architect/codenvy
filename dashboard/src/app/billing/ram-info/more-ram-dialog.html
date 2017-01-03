@@ -1,0 +1,44 @@
+<che-popup title="Get More RAM" on-close="moreRamController.hide()">
+  <div class="more-ram-dialog-content" layout="column">
+    <div>
+      In a team, the {{moreRamController.freeRAM}} GB RAM are free. Additional RAM costs ${{moreRamController.price}}/month/{{moreRamController.amount}}.
+    </div>
+    <div class="title">
+      Your account settings
+    </div>
+    <div>
+      Your account currently has {{moreRamController.totalRAM}} GB RAM and {{moreRamController.usedRAM}} GB in use.
+      You can add more RAM to the account.
+    </div>
+
+    <div class="title">
+      Do you want to add more RAM to the account?
+    </div>
+    <div>I need
+      <ng-form name="ramForm">
+        <input ng-model="moreRamController.value"
+               ng-form="ramForm"
+               class="value"
+               type="number"
+               ng-disabled="moreRamController.isLoading"
+               ng-min="moreRamController.minValue"
+               ng-max="moreRamController.maxValue"/> GB more RAM.
+      </ng-form>
+    </div>
+    <div>
+    <div class="error-label">
+      <div ng-show="ramForm.$invalid" >The RAM value should be from {{moreRamController.minValue}} GB to {{moreRamController.maxValue}} GB</div>
+    </div>
+    </div>
+
+    <div layout="row" layout-align="end center" class="buttons-layout">
+      <che-button-primary che-button-title="Continue"
+                          ng-disabled="ramForm.$invalid || moreRamController.isLoading"
+                          ng-click="moreRamController.getMoreRAM()"></che-button-primary>
+      <che-button-cancel-flat che-button-title="Cancel"
+                              ng-click="moreRamController.hide()"
+                              ng-disabled="moreRamController.isLoading"
+                              tabindex="0"></che-button-cancel-flat>
+    </div>
+  </div>
+</che-popup>

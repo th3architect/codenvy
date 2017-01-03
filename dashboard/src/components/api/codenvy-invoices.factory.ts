@@ -23,7 +23,7 @@ export interface IInvoice {
 
 /**
  * This class is handling the invoices API.
- * 
+ *
  * @author Ann Shumilova
  */
 export class CodenvyInvoices {

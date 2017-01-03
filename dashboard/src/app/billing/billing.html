@@ -26,7 +26,10 @@
           <span class="che-tab-label-title">Summary</span>
         </md-tab-label>
         <md-tab-body>
-          Summary tab
+          <div class="billing-content">
+            <ram-info account-id="billingController.accountId" ng-if="billingController.accountId"></ram-info>
+          </div>
+
         </md-tab-body>
       </md-tab>
 

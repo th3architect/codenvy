@@ -22,6 +22,9 @@ import {AddCreditCardController} from './card-info/add-credit-card/add-credit-ca
 import {AddCreditCard} from './card-info/add-credit-card/add-credit-card.directive';
 import {ListInvoices} from './invoices/list-invoices.directive';
 import {ListInvoicesController} from './invoices/list-invoices.controller';
+import {RamInfo} from './ram-info/ram-info.directive';
+import {RamInfoController} from './ram-info/ram-info.controller';
+import {MoreRamController} from './ram-info/more-ram.controller';
 
 export class BillingConfig {
 
@@ -37,6 +40,11 @@ export class BillingConfig {
 
     register.controller('ListInvoicesController', ListInvoicesController);
     register.directive('listInvoices', ListInvoices);
+
+    register.controller('RamInfoController', RamInfoController);
+    register.directive('ramInfo', RamInfo);
+
+    register.controller('MoreRamController', MoreRamController);
 
     // config routes
     register.app.config(($routeProvider: ng.route.IRouteProvider) => {
