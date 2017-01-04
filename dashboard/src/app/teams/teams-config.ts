@@ -33,6 +33,10 @@ import {MemberItem} from './team-details/team-members/member-item/member-item.di
 import {MemberItemController} from './team-details/team-members/member-item/member-item.controller';
 
 import {TeamDetailsController} from './team-details/team-details.controller';
+import {ListTeams} from './list/list-teams.directive';
+import {ListTeamsController} from './list/list-teams.controller';
+import {TeamItem} from './list/team-item/team-item.directive';
+import {TeamItemController} from './list/team-item/team-item.controller';
 
 export class TeamsConfig {
 
@@ -40,6 +44,12 @@ export class TeamsConfig {
     register.controller('NavbarTeamsController', NavbarTeamsController);
     register.directive('navbarTeams', NavbarTeams);
     register.controller('CreateTeamController', CreateTeamController);
+
+    register.controller('ListTeamsController', ListTeamsController);
+    register.directive('listTeams', ListTeams);
+
+    register.controller('TeamItemController', TeamItemController);
+    register.directive('teamItem', TeamItem);
 
     register.controller('MemberDialogController', MemberDialogController);
     register.controller('ListMembersController', ListMembersController);
