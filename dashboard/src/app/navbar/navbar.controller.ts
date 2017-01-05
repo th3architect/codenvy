@@ -13,15 +13,78 @@
  * from Codenvy S.A..
  */
 'use strict';
+import {CodenvyAPI} from '../../components/api/codenvy-api.factory';
+import {CodenvyUser} from '../../components/api/codenvy-user.factory';
+import {CodenvyPermissions} from '../../components/api/codenvy-permissions.factory';
 
-export class CodenvyNavBarCtrl {
+interface IUserServices {
+  hasUserService: boolean;
+  hasUserProfileService: boolean;
+  hasAdminUserService: boolean;
+  hasInstallationManagerService: boolean;
+  hasLicenseService: boolean;
+}
+
+export class CodenvyNavBarController {
+  menuItemUrl = {
+    login: '/site/login',
+    dashboard: '#/',
+    workspaces: '#/workspaces',
+    stacks: '#/stacks',
+    factories: '#/factories',
+    administration: '#/onprem/administration',
+    usermanagement: '#/admin/usermanagement',
+    // subsection
+    plugins: '#/admin/plugins'
+  };
+  // account dropdown items
+  accountItems = [
+    {
+      name: 'Profile & Account',
+      url: '#/account'
+    }, {
+      name: 'Administration',
+      url: '#/administration'
+    }, {
+      name: 'Logout',
+      onclick: () => {
+        this.logout();
+      }
+    }
+  ];
+  links = [{
+    href: '#/create-workspace',
+    name: 'New Workspace'
+  }];
+  displayLoginItem: boolean;
+  onpremAdminExpanded: boolean;
+  isAdminServiceAvailable: boolean;
+  isFactoryServiceAvailable: boolean;
+  isAdminPluginServiceAvailable: boolean;
+
+  private $scope: ng.IScope;
+  private $window: ng.IWindowService;
+  private $location: ng.ILocationService;
+  private $route: ng.route.IRouteService;
+  private $rootScope: ng.IRootScopeService;
+  private $cookies: ng.cookies.ICookiesService;
+  private $resource: ng.resource.IResourceService;
+  private $mdSidenav: ng.material.ISidenavService;
+  private userServices: IUserServices;
+  private codenvyAPI: CodenvyAPI;
+  private codenvyUser: CodenvyUser;
+  private codenvyPermissions: CodenvyPermissions;
+  private cheAPI: any;
+  private profile: any;
+  private logoutAPI: any;
+  private email: string;
 
   /**
    * Default constructor
    * @ngInject for Dependency injection
    */
-  constructor($mdSidenav, $scope, $location, $route, userDashboardConfig, cheAPI, codenvyAPI, $rootScope, $http, $window, $cookies, $resource) {
-    this.mdSidenav = $mdSidenav;
+  constructor($mdSidenav: ng.material.ISidenavService, $scope: ng.IScope, $location: ng.ILocationService, $route: ng.route.IRouteService, userDashboardConfig: any, cheAPI: any, codenvyAPI: CodenvyAPI, $rootScope: ng.IRootScopeService, $http: ng.IHttpService, $window: ng.IWindowService, $cookies: ng.cookies.ICookiesService, $resource: ng.resource.IResourceService) {
+    this.$mdSidenav = $mdSidenav;
     this.$scope = $scope;
     this.$location = $location;
     this.$route = $route;
@@ -29,7 +92,6 @@ export class CodenvyNavBarCtrl {
     this.codenvyAPI = codenvyAPI;
     this.codenvyUser = codenvyAPI.getUser();
     this.codenvyPermissions = codenvyAPI.getPermissions();
-    this.links = [{href: '#/create-workspace', name: 'New Workspace'}];
     this.$rootScope = $rootScope;
     this.$window = $window;
     this.$resource = $resource;
@@ -65,17 +127,6 @@ export class CodenvyNavBarCtrl {
     }
     this.onpremAdminExpanded = true;
 
-    this.menuItemUrl = {
-      login: '/site/login',
-      dashboard: '#/',
-      workspaces: '#/workspaces',
-      stacks: '#/stacks',
-      factories: '#/factories',
-      administration: '#/onprem/administration',
-      usermanagement: '#/admin/usermanagement',
-      // subsection
-      plugins: '#/admin/plugins'
-    };
 
     // highlight navbar menu item
     $scope.$on('$locationChangeStart', () => {
@@ -85,9 +136,9 @@ export class CodenvyNavBarCtrl {
 
     // update branding
     let assetPrefix = 'assets/branding/';
-    $http.get(assetPrefix + 'product.json').then((data) => {
+    $http.get(assetPrefix + 'product.json').then((data: any) => {
       if (data.data.navbarButton) {
-        this.$rootScope.branding.navbarButton = {
+        (this.$rootScope as any).branding.navbarButton = {
           title: data.data.navbarButton.title,
           tooltip: data.data.navbarButton.tooltip,
           link: data.data.navbarButton.link
@@ -100,45 +151,29 @@ export class CodenvyNavBarCtrl {
     });
 
     cheAPI.cheWorkspace.fetchWorkspaces();
-
-    // account dropdown items
-    this.accountItems = [
-      {
-        name: 'Profile & Account',
-        url: '#/account'
-      }, {
-        name: 'Administration',
-        url: '#/administration'
-      }, {
-        name: 'Logout',
-        onclick: () => {
-          this.logout();
-        }
-      }
-    ];
   }
 
-  reload() {
+  reload(): void {
     this.$route.reload();
   }
 
   /**
    * Toggle the left menu
    */
-  toggleLeftMenu() {
-    this.mdSidenav('left').toggle();
+  toggleLeftMenu(): void {
+    this.$mdSidenav('left').toggle();
   }
 
-  getWorkspacesNumber() {
+  getWorkspacesNumber(): number {
     return this.cheAPI.cheWorkspace.getWorkspaces().length;
   }
 
-  getFactoriesNumber() {
-    let pagesInfo = this.codenvyAPI.codenvyFactory.getPagesInfo();
-    return pagesInfo && pagesInfo.count ? pagesInfo.count : this.codenvyAPI.codenvyFactory.factoriesById.size;
+  getFactoriesNumber(): number {
+    let pagesInfo = this.codenvyAPI.getFactory().getPagesInfo();
+    return pagesInfo && pagesInfo.count ? pagesInfo.count : this.codenvyAPI.getFactory().factoriesById.size;
   }
 
-  openLinkInNewTab(url) {
+  openLinkInNewTab(url: string): void {
     this.$window.open(url, '_blank');
   }
 
@@ -149,7 +184,7 @@ export class CodenvyNavBarCtrl {
     let data = {token: this.$cookies['session-access-key']};
     let promise = this.logoutAPI.save(data).$promise;
     promise.then(() => {
-      this.$rootScope.showIDE = false;
+      (this.$rootScope as any).showIDE = false;
       this.$window.location.href = this.menuItemUrl.login;
       this.$cookies.remove('LICENSE_EXPIRED');
     });

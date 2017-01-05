@@ -14,13 +14,13 @@
  */
 'use strict';
 
-import {CodenvyNavBarCtrl} from './navbar.controller';
+import {CodenvyNavBarController} from './navbar.controller';
 import {CodenvyNavBar} from './navbar.directive';
 
 export class CodenvyNavbarConfig {
 
   constructor(register) {
-    register.controller('CodenvyNavBarCtrl', CodenvyNavBarCtrl);
+    register.controller('CodenvyNavBarController', CodenvyNavBarController);
     register.directive('codenvyNavBar', CodenvyNavBar);
   }
 }

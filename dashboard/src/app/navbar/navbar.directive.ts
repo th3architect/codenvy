@@ -28,8 +28,8 @@ export class CodenvyNavBar {
     this.restrict='E';
     this.replace = false;
     this.templateUrl = 'app/navbar/codenvy-navbar.html';
-    this.controller = 'CodenvyNavBarCtrl';
-    this.controllerAs = 'codenvyNavbarCtrl';
+    this.controller = 'CodenvyNavBarController';
+    this.controllerAs = 'codenvyNavbarController';
   }
 
 }
