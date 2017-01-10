@@ -18,6 +18,7 @@ import com.codenvy.ldap.LdapUserIdNormalizer;
 import com.codenvy.ldap.sync.LdapSynchronizer.SyncResult;
 import com.google.common.collect.ImmutableMap;
 
+import org.eclipse.che.api.core.NotFoundException;
 import org.eclipse.che.api.core.model.user.User;
 import org.eclipse.che.api.user.server.model.impl.ProfileImpl;
 import org.eclipse.che.api.user.server.model.impl.UserImpl;
@@ -28,6 +29,7 @@ import org.ldaptive.Connection;
 import org.ldaptive.ConnectionFactory;
 import org.ldaptive.LdapAttribute;
 import org.ldaptive.LdapEntry;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.testng.MockitoTestNGListener;
 import org.testng.annotations.BeforeMethod;
@@ -35,6 +37,8 @@ import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 
 import javax.persistence.EntityManager;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,6 +47,7 @@ import java.util.Set;
 import static java.util.Arrays.asList;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
+import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -257,6 +262,63 @@ public class LdapSynchronizerTest {
         assertEquals(syncResult.getRemoved(), 0);
         assertEquals(syncResult.getFailed(), 0);
         assertEquals(syncResult.getSkipped(), 2);
+    }
+
+    @Test
+    public void updatesUserIfLinkingAttributeIsDifferentFromId() throws Exception {
+        UserImpl existingUser = new UserImpl("user123", "user123@codenvy.com", "user_123");
+
+        DBUserFinder emailFinder = mock(DBUserFinder.class);
+        when(emailFinder.extractLinkingId(any(User.class))).thenAnswer(inv -> ((User)inv.getArguments()[0]).getEmail());
+        when(emailFinder.findLinkingIds()).thenReturn(new HashSet<>(Collections.singleton(existingUser.getEmail())));
+        when(emailFinder.findOne(anyString())).thenAnswer(inv -> {
+            if (!existingUser.getEmail().equals(inv.getArguments()[0])) {
+                throw new NotFoundException("no user " + inv.getArguments()[0]);
+            }
+            return existingUser;
+        });
+        when(profileDao.getById(existingUser.getId())).thenReturn(mock(ProfileImpl.class));
+
+        synchronizer = new LdapSynchronizer(connFactory,
+                                            entrySelector,
+                                            userDao,
+                                            profileDao,
+                                            idNormalizer,
+                                            null,
+                                            0,
+                                            0,
+                                            "uid",
+                                            "cn",
+                                            "mail",
+                                            null,
+                                            true,
+                                            true,
+                                            emailFinder);
+
+        ArrayList<LdapEntry> entries = new ArrayList<>(2);
+        entries.add(createUserEntry("different-id",   // <- the id is different from user123
+                                    "different-name", // <- the name is different from user_123
+                                    existingUser.getEmail(),
+                                    "first-name"));
+        entries.add(createUserEntry("new-user"));
+        when(entrySelector.select(anyObject())).thenReturn(entries);
+
+        final SyncResult syncResult = synchronizer.syncAll();
+
+        assertEquals(syncResult.getProcessed(), 2);
+        assertEquals(syncResult.getCreated(), 1);
+        assertEquals(syncResult.getUpdated(), 1);
+        assertEquals(syncResult.getUpToDate(), 0);
+        assertEquals(syncResult.getRemoved(), 0);
+        assertEquals(syncResult.getFailed(), 0);
+        assertEquals(syncResult.getSkipped(), 0);
+
+        ArgumentCaptor<UserImpl> userCaptor = ArgumentCaptor.forClass(UserImpl.class);
+        verify(userDao).update(userCaptor.capture());
+        UserImpl user = userCaptor.getValue();
+        assertEquals(user.getId(), existingUser.getId(), "id must be taken from existing user");
+        assertEquals(user.getName(), "different-name", "name must be updated");
+        assertEquals(user.getEmail(), existingUser.getEmail(), "linking attribute must be the same");
     }
 
     private static LdapEntry createUserEntry(String id) {

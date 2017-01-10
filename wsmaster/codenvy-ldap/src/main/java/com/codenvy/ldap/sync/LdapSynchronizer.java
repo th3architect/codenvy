@@ -275,7 +275,17 @@ public class LdapSynchronizer {
             }
 
             final User dbUser = userFinder.findOne(linkingId);
-            final Profile dbProfile = profileDao.getById(dbUser.getId());
+            final ProfileImpl dbProfile = profileDao.getById(dbUser.getId());
+            // user identifier in database is always 'id', which means
+            // that if linking attribute is different from 'id' then
+            // update may update the different user entity or fail.
+            // e.g.
+            // ldapUser.id    = "user123" !=  dbUser.id    = "123user"
+            // ldapUser.email = "m@m.com" ==  dbUser.email = "m@m.com"
+            //
+            // linking_attribute = 'email' update will fail with not found exception
+            // always use db id for user.
+            ldapUser.setId(dbUser.getId());
             if (updateUserAndProfile(dbUser, dbProfile, ldapUser, ldapProfile)) {
                 syncResult.updated++;
                 LOG.debug("Updated user & profile '{}'", ldapUser.getId());
@@ -375,7 +385,7 @@ public class LdapSynchronizer {
         }
         if (user.getEmail() == null) {
             LOG.warn(format("Cannot find out user's email. Please, check configuration `%s` parameter correctness.",
-                            USER_NAME_ATTRIBUTE_NAME));
+                            USER_EMAIL_ATTRIBUTE_NAME));
             return false;
         }
         return true;

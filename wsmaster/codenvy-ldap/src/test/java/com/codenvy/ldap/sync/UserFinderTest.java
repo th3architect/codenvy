@@ -88,6 +88,10 @@ public class UserFinderTest {
                 {
                         (BiFunction<UserDao, DBHelper, DBUserFinder>)DBUserFinder::newEmailFinder,
                         "SELECT email FROM Usr"
+                },
+                {
+                        (BiFunction<UserDao, DBHelper, DBUserFinder>)DBUserFinder::newNameFinder,
+                        "SELECT name FROM Usr"
                 }
         };
     }
@@ -114,6 +118,16 @@ public class UserFinderTest {
                                 throw new RuntimeException(x);
                             }
                         }
+                },
+                {
+                        (BiFunction<UserDao, DBHelper, DBUserFinder>)DBUserFinder::newNameFinder,
+                        (BiConsumer<UserDao, UserImpl>)(userDao, user) -> {
+                            try {
+                                when(userDao.getByName(user.getName())).thenReturn(user);
+                            } catch (Exception x) {
+                                throw new RuntimeException(x);
+                            }
+                        }
                 }
         };
     }
@@ -128,6 +142,10 @@ public class UserFinderTest {
                 {
                         (BiFunction<UserDao, DBHelper, DBUserFinder>)DBUserFinder::newEmailFinder,
                         (Function<UserImpl, String>)UserImpl::getEmail
+                },
+                {
+                        (BiFunction<UserDao, DBHelper, DBUserFinder>)DBUserFinder::newNameFinder,
+                        (Function<UserImpl, String>)UserImpl::getName
                 }
         };
     }

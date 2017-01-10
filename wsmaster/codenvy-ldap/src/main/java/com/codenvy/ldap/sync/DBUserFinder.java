@@ -39,6 +39,11 @@ public abstract class DBUserFinder {
         return new ByEmailUserFinder(userDao, dbHelper);
     }
 
+    /** Creates a new user finder based on his name. */
+    public static DBUserFinder newNameFinder(UserDao userDao, DBHelper dbHelper) {
+        return new ByNameUserFinder(userDao, dbHelper);
+    }
+
     protected final UserDao  userDao;
     protected final DBHelper dbHelper;
 
@@ -117,6 +122,30 @@ public abstract class DBUserFinder {
         @SuppressWarnings("unchecked") // user email is always string
         public Set<String> findLinkingIds() {
             return new HashSet<>(dbHelper.executeNativeQuery("SELECT email FROM Usr"));
+        }
+    }
+
+    /** Retrieves user by his name. */
+    private static class ByNameUserFinder extends DBUserFinder {
+
+        protected ByNameUserFinder(UserDao userDao, DBHelper dbHelper) {
+            super(userDao, dbHelper);
+        }
+
+        @Override
+        public String extractLinkingId(User ldapUser) {
+            return ldapUser.getName();
+        }
+
+        @Override
+        public User findOne(String name) throws NotFoundException, ServerException {
+            return userDao.getByName(name);
+        }
+
+        @Override
+        @SuppressWarnings("unchecked") // user name is always string
+        public Set<String> findLinkingIds() {
+            return new HashSet<>(dbHelper.executeNativeQuery("SELECT name FROM Usr"));
         }
     }
 }

@@ -45,6 +45,10 @@ public class DBUserFinderProvider implements Provider<DBUserFinder> {
         if (linkAttr.equals("email")) {
             return DBUserFinder.newEmailFinder(userDao, dbHelper);
         }
-        throw new IllegalStateException("Supported values for the property 'ldap.sync.user_linking_attribute' are 'id' or 'email'");
+        if (linkAttr.equals("name")) {
+            return DBUserFinder.newNameFinder(userDao, dbHelper);
+        }
+        throw new IllegalStateException("Supported values for the property 'ldap.sync.user_linking_attribute' " +
+                                        "are 'id', 'email' or 'name");
     }
 }
