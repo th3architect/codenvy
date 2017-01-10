@@ -25,7 +25,6 @@ import {AdminConfig} from './admin/admin-config';
 import {AccountConfig} from './account/details/account-config';
 import {CodenvyOnpremConfig} from './onprem/onprem-config';
 import {WorkspaceConfig} from './workspace/workspace-config';
-import {DocsConfig} from './documentation/docs-config';
 import {TeamsConfig} from './teams/teams-config';
 
 let initModule = angular.module('codenvyDashboard', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'braintree-angular', 'gavruk.card',
@@ -249,5 +248,4 @@ new AdminConfig(instanceRegister);
 new CodenvyOnpremConfig(instanceRegister);
 new AccountConfig(instanceRegister);
 new WorkspaceConfig(instanceRegister);
-new DocsConfig(instanceRegister);
 new TeamsConfig(instanceRegister);
